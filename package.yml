@@ -1,0 +1,18 @@
+package: community.lazycat.app.2fauth
+version: 9.0.0
+name: 2FAuth
+description: Self-hosted web based two-factor authentication code generator and 2FA manager
+min_os_version: "1.5.0"
+homepage: https://github.com/Bubka/2FAuth
+author: Bubka
+license: AGPL-3.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: 2FAuth
+    description: 自托管双因素验证码管理器：网页版 TOTP/HOTP 验证码生成与管理，替代 Google Authenticator
+  en:
+    name: 2FAuth
+    description: Self-hosted web based two-factor authentication code generator and 2FA manager

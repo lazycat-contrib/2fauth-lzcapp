@@ -1,0 +1,42 @@
+version: 1
+
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/application.lpk
+  target_arch: amd64
+
+update:
+  strategy: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: 2fauth
+
+build:
+  toolchains: []
+  run_buildscript: false
+
+images:
+  - id: 2fauth
+    target: service
+    service: 2fauth
+    source: docker.io/2fauth/2fauth
+    channel: stable
+    sort: semver
+    tag_regex: '^\d+\.\d+\.\d+$'
+    max_tags: 50000
+    max_matching_tags: 50000
+    delivery:
+      mode: mirror
+      require_digest_match: true
+
+stores:
+  official:
+    enabled: false
+  private:
+    enabled: true
+    skip_if_version_exists: true
+    name: 2FAuth
+    summary: 自托管双因素验证码管理器

@@ -1,0 +1,84 @@
+application:
+  subdomain: 2fauth
+  multi_instance: false
+  public_path:
+    - /
+  upstreams:
+    - location: /
+      backend: http://2fauth:8000/
+  injects:
+    # 三阶段免密登录：首次注册管理员时捕获凭据，之后自动填充
+    - id: capture-credentials
+      on: request
+      auth_required: false
+      when:
+        - /register
+        - /login
+      do: |
+        const payload = ctx.body.getJSON();
+        const user = payload && (payload.email || payload.username);
+        if (user && payload.password) {
+          ctx.flow.set("pending_user", String(user));
+          ctx.flow.set("pending_pass", String(payload.password));
+        }
+    - id: persist-credentials
+      on: response
+      auth_required: false
+      when:
+        - /register
+        - /login
+      do: |
+        if (ctx.status >= 200 && ctx.status < 300) {
+          const user = ctx.flow.get("pending_user");
+          const pass = ctx.flow.get("pending_pass");
+          if (user && pass) {
+            ctx.persist.set("saved_user", user);
+            ctx.persist.set("saved_pass", pass);
+          }
+        }
+    - id: autofill-login
+      when:
+        - /
+        - /login
+      do:
+        - src: builtin://simple-inject-password
+          params:
+            user:
+              $persist: saved_user
+            password:
+              $persist: saved_pass
+
+services:
+  2fauth:
+    # upstream: docker.io/2fauth/2fauth:9.0.0
+    image: docker.1ms.run/2fauth/2fauth:9.0.0
+    environment:
+      - APP_NAME=2FAuth
+      - APP_ENV=production
+      - APP_TIMEZONE=Asia/Shanghai
+      - APP_DEBUG=false
+      - SITE_OWNER=admin@lazycat.app
+      - APP_URL=https://${LAZYCAT_APP_DOMAIN}
+      - IS_DEMO_APP=false
+      - LOG_CHANNEL=daily
+      - LOG_LEVEL=notice
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/2fauth/database/database.sqlite
+      - MAIL_MAILER=log
+      - THROTTLE_AUTH_ATTEMPTS=true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8000/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    binds:
+      - /lzcapp/var/data:/2fauth
+
+usage: |
+  2FAuth 是自托管的两步验证码管理器：把各网站的 TOTP 密钥录入后，
+  随时在网页上查看实时验证码，支持复制和扫码迁移，替代手机验证器 App。
+  首次打开注册管理员账号（免密登录会记住首次凭据）。
+  重要提醒：请定期在设置里导出备份，验证码数据丢失后无法找回。
