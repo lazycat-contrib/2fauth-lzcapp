@@ -1,5 +1,5 @@
 application:
-  subdomain: 2fauth
+  subdomain: twofauth
   multi_instance: false
   public_path:
     - /

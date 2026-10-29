@@ -1,4 +1,4 @@
-package: community.lazycat.app.2fauth
+package: community.lazycat.app.twofauth
 version: 9.0.0
 name: 2FAuth
 description: Self-hosted web based two-factor authentication code generator and 2FA manager
