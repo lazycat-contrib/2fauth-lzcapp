@@ -5,7 +5,7 @@ application:
     - /
   upstreams:
     - location: /
-      backend: http://2fauth:8000/
+      backend: http://auth:8000/
   injects:
     # 三阶段免密登录：首次注册管理员时捕获凭据，之后自动填充
     - id: capture-credentials
@@ -49,7 +49,7 @@ application:
               $persist: saved_pass
 
 services:
-  2fauth:
+  auth:
     # upstream: docker.io/2fauth/2fauth:9.0.0
     image: docker.1ms.run/2fauth/2fauth:9.0.0
     environment:

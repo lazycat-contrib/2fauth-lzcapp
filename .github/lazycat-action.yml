@@ -21,7 +21,7 @@ build:
 images:
   - id: 2fauth
     target: service
-    service: 2fauth
+    service: auth
     source: docker.io/2fauth/2fauth
     channel: stable
     sort: semver
