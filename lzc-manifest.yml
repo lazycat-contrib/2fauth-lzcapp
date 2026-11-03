@@ -47,11 +47,10 @@ application:
               $persist: saved_user
             password:
               $persist: saved_pass
-
 services:
   auth:
-    # upstream: docker.io/2fauth/2fauth:9.0.0
-    image: docker.1ms.run/2fauth/2fauth:9.0.0
+    # upstream: docker.io/2fauth/2fauth:9.0.1
+    image: docker.1ms.run/2fauth/2fauth:9.0.1
     environment:
       - APP_NAME=2FAuth
       - APP_ENV=production
@@ -76,7 +75,6 @@ services:
       start_period: 40s
     binds:
       - /lzcapp/var/data:/2fauth
-
 usage: |
   2FAuth 是自托管的两步验证码管理器：把各网站的 TOTP 密钥录入后，
   随时在网页上查看实时验证码，支持复制和扫码迁移，替代手机验证器 App。
