@@ -49,8 +49,8 @@ application:
               $persist: saved_pass
 services:
   auth:
-    # upstream: docker.io/2fauth/2fauth:9.0.1
-    image: docker.1ms.run/2fauth/2fauth:9.0.1
+    # upstream: docker.io/2fauth/2fauth:9.0.2
+    image: docker.1ms.run/2fauth/2fauth:9.0.2
     environment:
       - APP_NAME=2FAuth
       - APP_ENV=production
